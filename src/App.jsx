@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import ProductFormModal from './components/ProductFormModal.jsx';
 import DeleteProductModal from './components/DeleteProductModal.jsx';
 import ProductCard from './components/ProductCard.jsx';
+import productRepository from './data/product/repository/product-repository.ts';
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -25,18 +26,10 @@ function App() {
       setLoadError('');
 
       try {
-        const response = await fetch('/api/products');
-        if (!response.ok) {
-          throw new Error(`Permintaan produk gagal (${response.status})`);
-        }
-
-        const result = await response.json();
-        if (result.status !== 'success' || !Array.isArray(result.data)) {
-          throw new Error('Format data produk tidak sesuai');
-        }
+        const productList = await productRepository.getProductList();
 
         if (isActive) {
-          setProducts(result.data);
+          setProducts(productList);
         }
       } catch (error) {
         console.error('Gagal memuat daftar produk:', error);
@@ -68,19 +61,10 @@ function App() {
     setSubmitError('');
 
     try {
-      const response = await fetch('/api/products', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(productInput)
-      });
-      const result = await response.json();
-
-      if (!response.ok || result.status !== 'success' || !result.data) {
-        throw new Error(result.message || 'Produk gagal ditambahkan.');
-      }
+      const newProduct = await productRepository.createProduct(productInput);
 
       setProducts((currentProducts) =>
-        [...currentProducts, result.data].sort((a, b) => a.id - b.id)
+        [...currentProducts, newProduct].sort((a, b) => a.id - b.id)
       );
       setSearchTerm('');
       setIsAddModalOpen(false);
@@ -101,20 +85,14 @@ function App() {
     setSubmitError('');
 
     try {
-      const response = await fetch(`/api/products/${productId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(productInput)
-      });
-      const result = await response.json();
-
-      if (!response.ok || result.status !== 'success' || !result.data) {
-        throw new Error(result.message || 'Produk gagal diperbarui.');
-      }
+      const updatedProduct = await productRepository.updateProduct(
+        productId,
+        productInput
+      );
 
       setProducts((currentProducts) =>
         currentProducts.map((product) =>
-          product.id === productId ? result.data : product
+          product.id === productId ? updatedProduct : product
         )
       );
       setEditingProduct(null);
@@ -135,14 +113,7 @@ function App() {
     setDeleteError('');
 
     try {
-      const response = await fetch(`/api/products/${productId}`, {
-        method: 'DELETE'
-      });
-      const result = await response.json();
-
-      if (!response.ok || result.status !== 'success') {
-        throw new Error(result.message || 'Produk gagal dihapus.');
-      }
+      await productRepository.deleteProduct(productId);
 
       setProducts((currentProducts) =>
         currentProducts.filter((product) => product.id !== productId)

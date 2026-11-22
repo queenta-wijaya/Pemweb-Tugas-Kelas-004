@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
+import productRepository from '../data/product/repository/product-repository.ts';
+import { ProductApiError } from '../data/product/source/product-remote.ts';
 
 const rupiahFormatter = new Intl.NumberFormat('id-ID', {
   style: 'currency',
@@ -24,23 +26,26 @@ function ProductDetailPage() {
       setIsNotFound(false);
 
       try {
-        const response = await fetch(`/api/products/${id}`);
-        if (response.status === 404) {
+        const productId = Number(id);
+        if (!Number.isSafeInteger(productId) || productId <= 0) {
           if (isActive) {
             setIsNotFound(true);
           }
           return;
         }
 
-        const result = await response.json();
-        if (!response.ok || result.status !== 'success' || !result.data) {
-          throw new Error(result.message || 'Detail produk gagal dimuat.');
-        }
-
+        const product = await productRepository.getProductById(productId);
         if (isActive) {
-          setProduct(result.data);
+          setProduct(product);
         }
       } catch (error) {
+        if (error instanceof ProductApiError && error.status === 404) {
+          if (isActive) {
+            setIsNotFound(true);
+          }
+          return;
+        }
+
         console.error('Gagal memuat detail produk:', error);
         if (isActive) {
           setLoadError(
