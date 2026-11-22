@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import ProductFormModal from './components/ProductFormModal.jsx';
 import DeleteProductModal from './components/DeleteProductModal.jsx';
-import ProductCard from './components/ProductCard.jsx';
+import ProductGrid from './components/organisms/ProductGrid/index.tsx';
 import productRepository from './data/product/repository/product-repository.ts';
 
 function App() {
@@ -218,27 +218,22 @@ function App() {
               : 'Produk tidak ditemukan.'}
           </p>
         ) : (
-          <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filteredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onEdit={(selectedProduct) => {
-                  setSubmitError('');
-                  setDeleteError('');
-                  setIsAddModalOpen(false);
-                  setDeletingProduct(null);
-                  setEditingProduct(selectedProduct);
-                }}
-                onDelete={(selectedProduct) => {
-                  setDeleteError('');
-                  setIsAddModalOpen(false);
-                  setEditingProduct(null);
-                  setDeletingProduct(selectedProduct);
-                }}
-              />
-            ))}
-          </div>
+          <ProductGrid
+            products={filteredProducts}
+            onEdit={(selectedProduct) => {
+              setSubmitError('');
+              setDeleteError('');
+              setIsAddModalOpen(false);
+              setDeletingProduct(null);
+              setEditingProduct(selectedProduct);
+            }}
+            onDelete={(selectedProduct) => {
+              setDeleteError('');
+              setIsAddModalOpen(false);
+              setEditingProduct(null);
+              setDeletingProduct(selectedProduct);
+            }}
+          />
         )}
       </section>
 
