@@ -37,6 +37,19 @@ Frontend menggunakan React Router di `app/routes.tsx`. Halaman `/` mengarah ke
 `/products`, `/products/:id` menampilkan detail produk, dan URL yang tidak
 terdaftar menampilkan halaman 404.
 
+## Struktur frontend
+
+Frontend ditulis dalam TypeScript dan mengikuti pola Atomic Design:
+
+- `app/` berisi entry point dan definisi rute React Router.
+- `src/components/atoms`, `molecules`, dan `organisms` berisi komponen UI
+  bertingkat, seperti tombol, modal, kartu produk, dan grid produk.
+- `src/components/pages` berisi halaman daftar produk, detail produk, dan 404;
+  layout bersama berada di `src/components/templates`.
+- `src/data/product` memisahkan model, parameter, sumber API, dan repository
+  produk.
+- `src/types` berisi tipe data yang digunakan bersama, termasuk `Product`.
+
 ## Endpoint API
 
 Semua endpoint menggunakan base URL `http://localhost:3000`.
