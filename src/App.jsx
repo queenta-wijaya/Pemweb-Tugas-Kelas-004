@@ -25,7 +25,7 @@ function App() {
       setLoadError('');
 
       try {
-        const response = await fetch('/products');
+        const response = await fetch('/api/products');
         if (!response.ok) {
           throw new Error(`Permintaan produk gagal (${response.status})`);
         }
@@ -68,7 +68,7 @@ function App() {
     setSubmitError('');
 
     try {
-      const response = await fetch('/products', {
+      const response = await fetch('/api/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(productInput)
@@ -101,7 +101,7 @@ function App() {
     setSubmitError('');
 
     try {
-      const response = await fetch(`/products/${productId}`, {
+      const response = await fetch(`/api/products/${productId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(productInput)
@@ -135,7 +135,7 @@ function App() {
     setDeleteError('');
 
     try {
-      const response = await fetch(`/products/${productId}`, {
+      const response = await fetch(`/api/products/${productId}`, {
         method: 'DELETE'
       });
       const result = await response.json();
@@ -223,14 +223,17 @@ function App() {
         />
 
         {isLoading ? (
-          <p className="list-message" role="status">
+          <p className="mt-4 text-slate-500" role="status">
             Memuat produk...
           </p>
         ) : loadError ? (
-          <div className="list-message error-message" role="alert">
-            <p>{loadError}</p>
+          <div
+            className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700"
+            role="alert"
+          >
+            <p className="mb-3">{loadError}</p>
             <button
-              className="secondary-button"
+              className="inline-flex min-h-9 items-center justify-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"
               type="button"
               onClick={() => setReloadKey((key) => key + 1)}
             >
@@ -238,7 +241,7 @@ function App() {
             </button>
           </div>
         ) : filteredProducts.length === 0 ? (
-          <p className="list-message">
+          <p className="mt-4 text-slate-500">
             {products.length === 0
               ? 'Belum ada produk.'
               : 'Produk tidak ditemukan.'}
