@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react';
-import ProductFormModal from './components/ProductFormModal.jsx';
-import DeleteProductModal from './components/DeleteProductModal.jsx';
-import ProductCard from './components/ProductCard.jsx';
+import type { Product, ProductInput } from '../../../types/product.ts';
+import productRepository from '../../../data/product/repository/product-repository.ts';
+import ProductFormModal from '../../molecules/ProductFormModal';
+import DeleteProductModal from '../../molecules/DeleteProductModal';
+import ProductGrid from '../../organisms/ProductGrid';
 
-function App() {
-  const [products, setProducts] = useState([]);
+function ProductsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
   const [reloadKey, setReloadKey] = useState(0);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
-  const [deletingProduct, setDeletingProduct] = useState(null);
+  const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState('');
 
@@ -25,18 +27,10 @@ function App() {
       setLoadError('');
 
       try {
-        const response = await fetch('/api/products');
-        if (!response.ok) {
-          throw new Error(`Permintaan produk gagal (${response.status})`);
-        }
-
-        const result = await response.json();
-        if (result.status !== 'success' || !Array.isArray(result.data)) {
-          throw new Error('Format data produk tidak sesuai');
-        }
+        const productList = await productRepository.getProductList();
 
         if (isActive) {
-          setProducts(result.data);
+          setProducts(productList);
         }
       } catch (error) {
         console.error('Gagal memuat daftar produk:', error);
@@ -63,24 +57,15 @@ function App() {
     product.name.toLocaleLowerCase('id-ID').includes(normalizedSearch)
   );
 
-  async function handleCreateProduct(productInput) {
+  async function handleCreateProduct(productInput: ProductInput) {
     setIsSubmitting(true);
     setSubmitError('');
 
     try {
-      const response = await fetch('/api/products', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(productInput)
-      });
-      const result = await response.json();
-
-      if (!response.ok || result.status !== 'success' || !result.data) {
-        throw new Error(result.message || 'Produk gagal ditambahkan.');
-      }
+      const newProduct = await productRepository.createProduct(productInput);
 
       setProducts((currentProducts) =>
-        [...currentProducts, result.data].sort((a, b) => a.id - b.id)
+        [...currentProducts, newProduct].sort((a, b) => a.id - b.id)
       );
       setSearchTerm('');
       setIsAddModalOpen(false);
@@ -96,25 +81,22 @@ function App() {
     }
   }
 
-  async function handleUpdateProduct(productId, productInput) {
+  async function handleUpdateProduct(
+    productId: number,
+    productInput: ProductInput
+  ) {
     setIsSubmitting(true);
     setSubmitError('');
 
     try {
-      const response = await fetch(`/api/products/${productId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(productInput)
-      });
-      const result = await response.json();
-
-      if (!response.ok || result.status !== 'success' || !result.data) {
-        throw new Error(result.message || 'Produk gagal diperbarui.');
-      }
+      const updatedProduct = await productRepository.updateProduct(
+        productId,
+        productInput
+      );
 
       setProducts((currentProducts) =>
         currentProducts.map((product) =>
-          product.id === productId ? result.data : product
+          product.id === productId ? updatedProduct : product
         )
       );
       setEditingProduct(null);
@@ -130,19 +112,12 @@ function App() {
     }
   }
 
-  async function handleDeleteProduct(productId) {
+  async function handleDeleteProduct(productId: number) {
     setIsDeleting(true);
     setDeleteError('');
 
     try {
-      const response = await fetch(`/api/products/${productId}`, {
-        method: 'DELETE'
-      });
-      const result = await response.json();
-
-      if (!response.ok || result.status !== 'success') {
-        throw new Error(result.message || 'Produk gagal dihapus.');
-      }
+      await productRepository.deleteProduct(productId);
 
       setProducts((currentProducts) =>
         currentProducts.filter((product) => product.id !== productId)
@@ -247,27 +222,22 @@ function App() {
               : 'Produk tidak ditemukan.'}
           </p>
         ) : (
-          <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filteredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onEdit={(selectedProduct) => {
-                  setSubmitError('');
-                  setDeleteError('');
-                  setIsAddModalOpen(false);
-                  setDeletingProduct(null);
-                  setEditingProduct(selectedProduct);
-                }}
-                onDelete={(selectedProduct) => {
-                  setDeleteError('');
-                  setIsAddModalOpen(false);
-                  setEditingProduct(null);
-                  setDeletingProduct(selectedProduct);
-                }}
-              />
-            ))}
-          </div>
+          <ProductGrid
+            products={filteredProducts}
+            onEdit={(selectedProduct) => {
+              setSubmitError('');
+              setDeleteError('');
+              setIsAddModalOpen(false);
+              setDeletingProduct(null);
+              setEditingProduct(selectedProduct);
+            }}
+            onDelete={(selectedProduct) => {
+              setDeleteError('');
+              setIsAddModalOpen(false);
+              setEditingProduct(null);
+              setDeletingProduct(selectedProduct);
+            }}
+          />
         )}
       </section>
 
@@ -308,4 +278,4 @@ function App() {
   );
 }
 
-export default App;
+export default ProductsPage;

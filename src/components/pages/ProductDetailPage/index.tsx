@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router';
+import type { Product } from '../../../types/product.ts';
+import productRepository from '../../../data/product/repository/product-repository.ts';
+import { ProductApiError } from '../../../data/product/source/product-remote.ts';
 
 const rupiahFormatter = new Intl.NumberFormat('id-ID', {
   style: 'currency',
@@ -9,7 +12,7 @@ const rupiahFormatter = new Intl.NumberFormat('id-ID', {
 
 function ProductDetailPage() {
   const { id } = useParams();
-  const [product, setProduct] = useState(null);
+  const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
   const [isNotFound, setIsNotFound] = useState(false);
@@ -24,23 +27,26 @@ function ProductDetailPage() {
       setIsNotFound(false);
 
       try {
-        const response = await fetch(`/api/products/${id}`);
-        if (response.status === 404) {
+        const productId = Number(id);
+        if (!Number.isSafeInteger(productId) || productId <= 0) {
           if (isActive) {
             setIsNotFound(true);
           }
           return;
         }
 
-        const result = await response.json();
-        if (!response.ok || result.status !== 'success' || !result.data) {
-          throw new Error(result.message || 'Detail produk gagal dimuat.');
-        }
-
+        const loadedProduct = await productRepository.getProductById(productId);
         if (isActive) {
-          setProduct(result.data);
+          setProduct(loadedProduct);
         }
       } catch (error) {
+        if (error instanceof ProductApiError && error.status === 404) {
+          if (isActive) {
+            setIsNotFound(true);
+          }
+          return;
+        }
+
         console.error('Gagal memuat detail produk:', error);
         if (isActive) {
           setLoadError(
@@ -66,7 +72,7 @@ function ProductDetailPage() {
     <main className="mx-auto min-h-screen w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-16">
       <Link
         className="mb-5 inline-flex min-h-9 items-center justify-center rounded-lg border border-blue-600 bg-white px-3 py-1.5 text-sm font-medium text-blue-700 no-underline transition-colors hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-        to="/"
+        to="/products"
       >
         Kembali ke daftar produk
       </Link>

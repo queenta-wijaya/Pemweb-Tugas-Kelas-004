@@ -1,4 +1,13 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
+import type { Product } from '../../../types/product.ts';
+import Button from '../../atoms/Button';
+import styles from './styles.module.css';
+
+type ProductCardProps = {
+  product: Product;
+  onEdit: (product: Product) => void;
+  onDelete: (product: Product) => void;
+};
 
 const rupiahFormatter = new Intl.NumberFormat('id-ID', {
   style: 'currency',
@@ -6,9 +15,11 @@ const rupiahFormatter = new Intl.NumberFormat('id-ID', {
   maximumFractionDigits: 0
 });
 
-function ProductCard({ product, onEdit, onDelete }) {
+function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
   return (
-    <article className="min-w-0 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md">
+    <article
+      className={`${styles.card} rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md`}
+    >
       <span className="text-xs text-slate-500">ID: {product.id}</span>
       <h3 className="mt-2 break-words text-base font-semibold text-slate-900">
         {product.name}
@@ -23,20 +34,15 @@ function ProductCard({ product, onEdit, onDelete }) {
         >
           Detail
         </Link>
-        <button
-          className="inline-flex min-h-9 items-center justify-center rounded-md border border-blue-600 px-3 py-1.5 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-          type="button"
+        <Button
+          variant="secondary"
           onClick={() => onEdit(product)}
         >
           Edit
-        </button>
-        <button
-          className="inline-flex min-h-9 items-center justify-center rounded-md border border-red-600 bg-red-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:border-red-700 hover:bg-red-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
-          type="button"
-          onClick={() => onDelete(product)}
-        >
+        </Button>
+        <Button variant="danger" onClick={() => onDelete(product)}>
           Hapus
-        </button>
+        </Button>
       </div>
     </article>
   );
