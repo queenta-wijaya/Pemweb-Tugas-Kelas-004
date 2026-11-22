@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 const rupiahFormatter = new Intl.NumberFormat('id-ID', {
   style: 'currency',

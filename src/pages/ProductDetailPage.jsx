@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router';
 
 const rupiahFormatter = new Intl.NumberFormat('id-ID', {
   style: 'currency',
@@ -66,7 +66,7 @@ function ProductDetailPage() {
     <main className="mx-auto min-h-screen w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-16">
       <Link
         className="mb-5 inline-flex min-h-9 items-center justify-center rounded-lg border border-blue-600 bg-white px-3 py-1.5 text-sm font-medium text-blue-700 no-underline transition-colors hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-        to="/"
+        to="/products"
       >
         Kembali ke daftar produk
       </Link>

@@ -33,6 +33,10 @@ Express di `http://localhost:3000`. Untuk memeriksa tipe TypeScript dan build:
 npm run build
 ```
 
+Frontend menggunakan React Router di `app/routes.tsx`. Halaman `/` mengarah ke
+`/products`, `/products/:id` menampilkan detail produk, dan URL yang tidak
+terdaftar menampilkan halaman 404.
+
 ## Endpoint API
 
 Semua endpoint menggunakan base URL `http://localhost:3000`.
