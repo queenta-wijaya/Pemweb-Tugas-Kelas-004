@@ -1,4 +1,14 @@
-import { useState } from 'react';
+import { useState, type FormEvent, type MouseEvent } from 'react';
+import type { Product, ProductInput } from '../../../types/product.ts';
+import Button from '../../atoms/Button';
+
+type ProductFormModalProps = {
+  product: Product | null;
+  isSubmitting: boolean;
+  submitError: string;
+  onClose: () => void;
+  onSubmit: (product: ProductInput) => void | Promise<void>;
+};
 
 function ProductFormModal({
   product,
@@ -6,27 +16,29 @@ function ProductFormModal({
   submitError,
   onClose,
   onSubmit
-}) {
+}: ProductFormModalProps) {
   const [name, setName] = useState(product ? product.name : '');
   const [price, setPrice] = useState(product ? String(product.price) : '');
 
-  function handleSubmit(event) {
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    onSubmit({ name: name.trim(), price: Number(price) });
+    void onSubmit({ name: name.trim(), price: Number(price) });
+  }
+
+  function handleBackdropMouseDown(event: MouseEvent<HTMLDivElement>) {
+    if (event.target === event.currentTarget && !isSubmitting) {
+      onClose();
+    }
   }
 
   return (
     <div
       className="fixed inset-0 z-10 grid place-items-center bg-slate-900/45 p-5"
       role="presentation"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget && !isSubmitting) {
-          onClose();
-        }
-      }}
+      onMouseDown={handleBackdropMouseDown}
     >
       <section
-        className="w-full max-w-[460px] rounded-xl border border-slate-200 bg-white p-5 shadow-2xl sm:p-6"
+        className="max-h-[calc(100dvh-2.5rem)] w-full max-w-[460px] overflow-y-auto rounded-xl border border-slate-200 bg-white p-5 shadow-2xl sm:p-6"
         role="dialog"
         aria-modal="true"
         aria-labelledby="product-form-title"
@@ -106,25 +118,26 @@ function ProductFormModal({
           )}
 
           <div className="mt-6 flex flex-col-reverse justify-end gap-2 sm:flex-row">
-            <button
-              className="inline-flex min-h-10 items-center justify-center rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50 disabled:cursor-wait disabled:opacity-65"
+            <Button
+              variant="secondary"
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
+              className="min-h-10 px-3.5"
             >
               Batal
-            </button>
-            <button
-              className="inline-flex min-h-10 items-center justify-center rounded-lg border border-blue-700 bg-blue-700 px-3.5 py-2 text-sm font-semibold text-white hover:bg-blue-800 disabled:cursor-wait disabled:opacity-65"
+            </Button>
+            <Button
               type="submit"
               disabled={isSubmitting}
+              className="min-h-10 px-3.5 font-semibold"
             >
               {isSubmitting
                 ? 'Menyimpan...'
                 : product
                   ? 'Simpan Perubahan'
                   : 'Simpan Produk'}
-            </button>
+            </Button>
           </div>
         </form>
       </section>

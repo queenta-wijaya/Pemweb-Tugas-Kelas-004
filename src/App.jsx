@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import ProductFormModal from './components/ProductFormModal.jsx';
-import DeleteProductModal from './components/DeleteProductModal.jsx';
+import ProductFormModal from './components/molecules/ProductFormModal/index.tsx';
+import DeleteProductModal from './components/molecules/DeleteProductModal/index.tsx';
 import ProductGrid from './components/organisms/ProductGrid/index.tsx';
 import productRepository from './data/product/repository/product-repository.ts';
 
