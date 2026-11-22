@@ -5,8 +5,11 @@
   "description": "Latihan REST API produk menggunakan Express.js",
   "main": "server.js",
   "scripts": {
-    "dev": "node --watch server.js",
-    "dev:client": "vite",
+    "dev": "vite --host 127.0.0.1",
+    "dev:api": "node --watch server.js",
+    "dev:client": "vite --host 127.0.0.1",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run typecheck && vite build",
     "build:client": "vite build",
     "start": "node server.js",
     "db:migrate": "prisma migrate dev",
@@ -22,10 +25,18 @@
     "react-router-dom": "^7.18.6"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.3.5",
+    "@tailwindcss/postcss": "^4.3.5",
+    "@types/node": "^22.20.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.3.0",
+    "postcss": "^8.5.33",
     "prisma": "^6.19.3",
     "tailwindcss": "^4.3.5",
+    "typescript": "^5.9.3",
     "vite": "^8.3.8"
+  },
+  "engines": {
+    "node": ">=22.12.0"
   }
 }

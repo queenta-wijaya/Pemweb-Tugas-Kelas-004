@@ -8,10 +8,10 @@ Pastikan Node.js dan npm sudah terpasang. Dari folder proyek, jalankan:
 npm install
 npm run db:migrate
 npm run db:seed
-npm run dev
+npm run dev:api
 ```
 
-Server berjalan di `http://localhost:3000`. Data awal:
+Backend berjalan di `http://localhost:3000`. Data awal:
 
 | ID | Nama | Harga |
 |---:|---|---:|
@@ -20,17 +20,17 @@ Server berjalan di `http://localhost:3000`. Data awal:
 
 ## Menjalankan antarmuka React
 
-Jalankan API dengan `npm run dev`, lalu buka terminal lain dan jalankan:
+Jalankan frontend di terminal lain:
 
 ```bash
-npm run dev:client
+npm run dev
 ```
 
-Buka `http://localhost:5173`. Vite meneruskan permintaan `/products` ke API
-Express di `http://localhost:3000`. Untuk memeriksa hasil build frontend:
+Buka `http://127.0.0.1:5173`. Vite meneruskan permintaan `/api/products` ke API
+Express di `http://localhost:3000`. Untuk memeriksa tipe TypeScript dan build:
 
 ```bash
-npm run build:client
+npm run build
 ```
 
 ## Endpoint API
