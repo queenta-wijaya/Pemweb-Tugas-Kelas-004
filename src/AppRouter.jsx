@@ -1,5 +1,6 @@
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 import App from './App.jsx';
+import ProductDetailPage from './pages/ProductDetailPage.jsx';
 
 function NotFoundPage() {
   return (
@@ -23,6 +24,7 @@ function AppRouter() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
+        <Route path="/products/:id" element={<ProductDetailPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>

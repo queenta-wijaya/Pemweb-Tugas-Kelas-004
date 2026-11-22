@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 const rupiahFormatter = new Intl.NumberFormat('id-ID', {
   style: 'currency',
   currency: 'IDR',
@@ -11,6 +13,9 @@ function ProductCard({ product, onEdit, onDelete }) {
       <h3>{product.name}</h3>
       <p className="product-price">{rupiahFormatter.format(product.price)}</p>
       <div className="product-actions">
+        <Link className="outline-button" to={`/products/${product.id}`}>
+          Detail
+        </Link>
         <button
           className="outline-button"
           type="button"
